@@ -1,6 +1,5 @@
 ---
 layout: default
-title: Forward API - Forward Stored Credentials
 ---
 
 # Forward Stored Credentials
