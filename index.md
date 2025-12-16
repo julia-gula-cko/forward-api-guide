@@ -125,6 +125,7 @@ You can use the following placeholder values in the `destination_request.body` f
 
 #### Card details placeholders
 
+{% raw %}
 | Placeholder | Description |
 |-------------|-------------|
 | `{{card_cvv}}` | The card verification value (security code) |
@@ -134,9 +135,11 @@ You can use the following placeholder values in the `destination_request.body` f
 | `{{card_number}}` | The full card number |
 | `{{card_pin}}` | The first two digits of the card's PIN |
 | `{{cardholder_name}}` | The cardholder's name as shown on the card |
+{% endraw %}
 
 #### Billing information placeholders
 
+{% raw %}
 | Placeholder | Description |
 |-------------|-------------|
 | `{{billing_address_city}}` | The city of the billing address |
@@ -145,9 +148,11 @@ You can use the following placeholder values in the `destination_request.body` f
 | `{{billing_address_line2}}` | The second line of the billing address |
 | `{{billing_address_state}}` | The state of the billing address |
 | `{{billing_address_zip}}` | The ZIP code or post code of the billing address |
+{% endraw %}
 
 #### Network token placeholders
 
+{% raw %}
 | Placeholder | Description |
 |-------------|-------------|
 | `{{network_token_number}}` | The network token number from the card scheme |
@@ -157,6 +162,7 @@ You can use the following placeholder values in the `destination_request.body` f
 | `{{network_token_expiry_year_yy}}` | The network token's expiry year (format: `YY`) |
 | `{{network_token_expiry_year_yyyy}}` | The network token's expiry year (format: `YYYY`) |
 | `{{network_token_expiry_month}}` | The network token's expiry month (format: `MM`) |
+{% endraw %}
 
 > **ℹ️ Note:** If you use the Forward API to perform an authorization with a third party, you must handle any post-transaction actions directly with them (captures, refunds, disputes).
 
@@ -169,6 +175,7 @@ You can use the following placeholder values in the `destination_request.body` f
 
 ### Request example
 
+{% raw %}
 ```json
 {
   "source": {
@@ -191,6 +198,7 @@ You can use the following placeholder values in the `destination_request.body` f
   }
 }
 ```
+{% endraw %}
 
 ### Response example
 
@@ -220,10 +228,11 @@ You can use variables, query parameters, and JWE encryption to build complex req
 
 Variables allow you to define reusable values that can be referenced throughout your request. They are processed before the request body, headers, and query parameters.
 
-Variables are defined in the `variables` array within your `destination_request`. Each variable has a `name` and a `value`. Once defined, you can reference them anywhere using the syntax `{{ variable_name }}`.
+Variables are defined in the `variables` array within your `destination_request`. Each variable has a `name` and a `value`. Once defined, you can reference them anywhere using the syntax {% raw %}`{{ variable_name }}`{% endraw %}.
 
 #### Request example with variables
 
+{% raw %}
 ```json
 {
   "source": {
@@ -255,6 +264,7 @@ Variables are defined in the `variables` array within your `destination_request`
   }
 }
 ```
+{% endraw %}
 
 ### Query parameters
 
@@ -264,6 +274,7 @@ For example, if your destination URL is `https://api.example.com/v1/charges` and
 
 #### Request example with query parameters
 
+{% raw %}
 ```json
 {
   "source": {
@@ -287,6 +298,7 @@ For example, if your destination URL is `https://api.example.com/v1/charges` and
   }
 }
 ```
+{% endraw %}
 
 ### JWE encryption
 
@@ -294,9 +306,11 @@ JWE (JSON Web Encryption) allows you to encrypt sensitive data within your reque
 
 The `jwe_encrypt` function is available within your templates:
 
+{% raw %}
 ```
 {{ jwe_encrypt(data=data_to_encrypt, key=encryption_key, alg='RSA-OAEP', enc='A256GCM', headers=custom_headers) }}
 ```
+{% endraw %}
 
 | Parameter | Description | Example values |
 |-----------|-------------|----------------|
@@ -315,6 +329,7 @@ The `jwe_encrypt` function is available within your templates:
 
 #### Asymmetric key encryption example
 
+{% raw %}
 ```json
 {
   "destination_request": {
@@ -332,6 +347,7 @@ The `jwe_encrypt` function is available within your templates:
   }
 }
 ```
+{% endraw %}
 
 #### Symmetric key encryption example
 
@@ -382,8 +398,9 @@ Store a secret by providing a unique name and the sensitive value.
 
 ### Using secrets in requests
 
-Once a secret is stored, reference it using the `{{ secret_<secret_name> }}` syntax:
+Once a secret is stored, reference it using the {% raw %}`{{ secret_<secret_name> }}`{% endraw %} syntax:
 
+{% raw %}
 ```json
 {
   "destination_request": {
@@ -395,6 +412,7 @@ Once a secret is stored, reference it using the `{{ secret_<secret_name> }}` syn
   }
 }
 ```
+{% endraw %}
 
 ---
 
@@ -438,6 +456,7 @@ To forward a payment request to Stripe, follow these steps:
 
 ### 1. Create a payment method
 
+{% raw %}
 ```bash
 curl --location 'https://forward.sandbox.checkout.com/forward' \
 --header 'Content-Type: application/json' \
@@ -463,6 +482,7 @@ curl --location 'https://forward.sandbox.checkout.com/forward' \
   }
 }'
 ```
+{% endraw %}
 
 ### 2. Create a payment intent
 
@@ -506,6 +526,7 @@ curl --location 'https://forward.sandbox.checkout.com/forward' \
 
 To forward a payment request to Adyen:
 
+{% raw %}
 ```json
 {
   "source": {
@@ -527,6 +548,7 @@ To forward a payment request to Adyen:
   }
 }
 ```
+{% endraw %}
 
 ---
 
@@ -543,6 +565,7 @@ The following Python script shows a complete integration with Visa's API using t
 - Using secrets for secure API key and encryption key storage
 - Constructing the full Forward API request with query parameters and signature
 
+{% raw %}
 ```python
 import requests
 import json
@@ -654,6 +677,7 @@ response = requests.request(
 forwarded_request = json.loads(response.json()["destination_response"]["body"])["data"]
 print(json.dumps(json.loads(forwarded_request), indent=2))
 ```
+{% endraw %}
 
 ### Key concepts in this example
 
@@ -664,7 +688,7 @@ print(json.dumps(json.loads(forwarded_request), indent=2))
 | `encryption_key` variable | The symmetric encryption key in JWK format (must be SHA-256 hashed) |
 | `jwe_encrypt()` function | Encrypts the payment instrument for secure transmission to Visa |
 | `signature.type: "visa"` | Enables Visa-specific request signing |
-| `{{ secret.* }}` placeholders | References securely stored API keys and shared secrets |
+| {% raw %}`{{ secret.* }}`{% endraw %} placeholders | References securely stored API keys and shared secrets |
 
 ### Required secrets
 
