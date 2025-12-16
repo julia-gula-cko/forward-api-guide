@@ -1,8 +1,5 @@
 title: Forward API Documentation
 description: Forward stored credentials to third-party APIs securely
-remote_theme: andrewhwanpark/dark-poole
-plugins:
-  - jekyll-remote-theme
 
 markdown: kramdown
 highlighter: rouge
