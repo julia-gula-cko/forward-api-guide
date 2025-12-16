@@ -83,7 +83,7 @@ Authenticate the request using one of the following:
 | `destination_request.url` | The third-party endpoint you want to forward the request to |
 | `destination_request.method` | The HTTP method you want to use for the request |
 | `destination_request.headers.raw` | The raw HTTP headers you want to include in the request |
-| `destination_request.body` | The JSON payload formatted according to the key-value pairs expected by the destination PSP |
+| `destination_request.body` | The JSON payload formatted according to the key-value pairs expected by the destination PSP. **Must be a string** – see [Formatting the body](#formatting-the-body) below. |
 
 **Optional parameters:**
 - `source.cvv_token` – The token ID for the card verification value (CVV), prefixed with `tok_`
@@ -98,9 +98,52 @@ Authenticate the request using one of the following:
 | `destination_request.url` | The third-party endpoint you want to forward the request to |
 | `destination_request.method` | The HTTP method you want to use for the request |
 | `destination_request.headers.raw` | The raw HTTP headers you want to include in the request |
-| `destination_request.body` | The JSON payload formatted according to the key-value pairs expected by the destination PSP |
+| `destination_request.body` | The JSON payload formatted according to the key-value pairs expected by the destination PSP. **Must be a string** – see [Formatting the body](#formatting-the-body) below. |
 
 **Optional:** `source.store_for_future_use` – Store the token as a payment instrument.
+
+### Formatting the body
+
+The `destination_request.body` field must be a **string**, not a JSON object. If your destination expects JSON, you need to escape (stringify) the JSON payload.
+
+For example, this JSON object:
+
+```json
+{
+  "amount": 1000,
+  "card": {
+    "number": "{{card_number}}",
+    "expiry_month": "{{card_expiry_month}}"
+  }
+}
+```
+
+Must be escaped to a string like this:
+
+```
+"{\"amount\": 1000, \"card\": {\"number\": \"{{card_number}}\", \"expiry_month\": \"{{card_expiry_month}}\"}}"
+```
+
+#### Python example
+
+```python
+import json
+
+body_object = {
+    "amount": 1000,
+    "card": {
+        "number": "{{card_number}}",
+        "expiry_month": "{{card_expiry_month}}"
+    }
+}
+
+# Convert to escaped string
+body_string = json.dumps(body_object)
+```
+
+#### Online tool
+
+You can also use an online tool like [FreeFormatter JSON Escape](https://www.freeformatter.com/json-escape.html) to escape your JSON.
 
 ### Using network tokens
 
