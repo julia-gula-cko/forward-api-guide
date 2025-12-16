@@ -14,13 +14,13 @@ A static documentation site for the Checkout.com Forward API, hosted on GitHub P
 2. **Enable GitHub Pages**
    - Go to your repository on GitHub
    - Navigate to **Settings** → **Pages**
-   - Under "Source", select **Deploy from a branch**
-   - Select the **main** branch and **/ (root)** folder
-   - Click **Save**
+   - Under "Source", select **GitHub Actions**
+   - The workflow at `.github/workflows/deploy.yml` will automatically build and deploy
 
 3. **Access your site**
    - Your documentation will be available at: `https://<username>.github.io/forward-api-guide/`
-   - It may take a few minutes for the initial deployment
+   - The workflow runs automatically on every push to `main`
+   - You can also trigger it manually from the **Actions** tab
 
 ## 📝 Editing the documentation
 
@@ -53,6 +53,8 @@ remote_theme: pages-themes/cayman@v0.2.0
 |------|---------|
 | `index.md` | Main documentation content |
 | `_config.yml` | Jekyll configuration and theme settings |
+| `Gemfile` | Ruby dependencies for Jekyll |
+| `.github/workflows/deploy.yml` | GitHub Actions workflow for auto-deployment |
 | `forward_api_visa.py` | Python example for Visa integration |
 | `README.md` | This file |
 
