@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="{{ site.lang | default: "en-US" }}">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{{ page.title | default: site.title }}</title>
+    <meta name="description" content="{{ page.description | default: site.description }}">
+
+    <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+    <script src="{{ '/assets/js/respond.js' | relative_url }}"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="{{ '/assets/css/ie.css' | relative_url }}">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  </head>
+  <body>
+    <div id="header">
+      <nav>
+        <ul>
+          <li class="fork"><a href="{{ site.github.repository_url }}">View On GitHub</a></li>
+          {% if site.show_downloads %}
+            <li class="downloads"><a href="{{ site.github.zip_url }}">ZIP</a></li>
+            <li class="downloads"><a href="{{ site.github.tar_url }}">TAR</a></li>
+            <li class="title">DOWNLOADS</li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>
+
+    <div id="banner">
+      <span id="logo"></span>
+      <a href="{{ '/' | relative_url }}" class="button fork"><strong>{{ site.title }}</strong></a>
+      {% if site.show_downloads %}
+        <div class="downloads">
+          <span>Downloads:</span>
+          <ul>
+            <li><a href="{{ site.github.zip_url }}" class="button">ZIP</a></li>
+            <li><a href="{{ site.github.tar_url }}" class="button">TAR</a></li>
+          </ul>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="wrapper">
+      <nav class="sidebar-toc">
+        <h4>On this page</h4>
+        <ul>
+          <li><a href="#retrieve-json-web-key">Retrieve JSON Web Key</a></li>
+          <li><a href="#retrieve-the-instrument-token-or-network-token">Retrieve instrument/token</a></li>
+          <li><a href="#create-a-forward-request">Create a forward request</a></li>
+          <li><a href="#building-requests">Building requests</a></li>
+          <li><a href="#secrets-in-forward-api">Secrets in Forward API</a></li>
+          <li><a href="#forwarding-logic">Forwarding logic</a></li>
+          <li><a href="#visa-integration-example">Visa integration example</a></li>
+          <li><a href="#view-forward-request-outcomes">View request outcomes</a></li>
+        </ul>
+      </nav>
+
+      <section class="main-content">
+        {{ content }}
+
+        <footer>
+          {% if site.github.is_project_page %}
+          <p>Project maintained by <a href="{{ site.github.owner_url }}">{{ site.github.owner_name }}</a></p>
+          {% endif %}
+          <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/mattgraham">mattgraham</a></small></p>
+        </footer>
+      </section>
+    </div>
+  </body>
+</html>
+

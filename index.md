@@ -11,7 +11,7 @@ Use the [Forward API](https://api-reference.checkout.com/#tag/Forward) to enrich
 - The card details stored in an instrument or token
 - The details of a network token
 
-The request is then securely forwarded to your specified third-party API endpoint. For example, you can forward the request to external fraud engines, 3D Secure (3DS) engines, and other payment services providers (PSPs) such as [Stripe](#stripe-forwarding-example) or [Adyen](#adyen-forwarding-example).
+The request is then securely forwarded to your specified third-party API endpoint. For example, you can forward the request to external fraud engines, 3D Secure (3DS) engines, and other payment services providers (PSPs).
 
 > **ℹ️ Info:** To enable forwarding, contact your account manager or [request support](https://dashboard.checkout.com/support/new?topic=case_configuration_change&issue=case_configuration_issue_operational_change_request).
 
@@ -23,21 +23,6 @@ This enables you to:
 - Provide card-linked offers to an issuer or card network.
 
 > **ℹ️ Important:** You must ensure that the third-party endpoint you forward the request to belongs to a PCI-compliant entity.
-
----
-
-## Table of Contents
-
-- [Retrieve JSON Web Key](#retrieve-json-web-key)
-- [Retrieve the instrument, token, or network token](#retrieve-the-instrument-token-or-network-token)
-- [Create a forward request](#create-a-forward-request)
-- [Building requests](#building-requests)
-- [Secrets in Forward API](#secrets-in-forward-api)
-- [Forwarding logic](#forwarding-logic)
-- [Stripe forwarding example](#stripe-forwarding-example)
-- [Adyen forwarding example](#adyen-forwarding-example)
-- [Visa integration example](#visa-integration-example)
-- [View forward request outcomes](#view-forward-request-outcomes)
 
 ---
 
@@ -447,108 +432,6 @@ If a network token or cryptogram is unavailable, the following card detail value
 - `card_number`
 - `card_expiry_month`
 - `card_expiry_year_yyyy` or `card_expiry_year_yy`
-
----
-
-## Stripe forwarding example
-
-To forward a payment request to Stripe, follow these steps:
-
-### 1. Create a payment method
-
-{% raw %}
-```bash
-curl --location 'https://forward.sandbox.checkout.com/forward' \
---header 'Content-Type: application/json' \
---header 'Authorization: YOUR_OAUTH_TOKEN' \
---data '{
-  "source": {
-    "type": "id",
-    "id": "src_u422hics5oouvix25ous63grcy"
-  },
-  "reference": "string",
-  "processing_channel_id": "pc_f2vtqcmhgykurkorrnnpz3kneq",
-  "destination_request": {
-    "url": "https://api.stripe.com/v1/payment_methods",
-    "method": "POST",
-    "headers": {
-      "raw": {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "Authorization": "Basic YOUR_STRIPE_KEY_BASE64",
-        "Host": "api.stripe.com"
-      }
-    },
-    "body": "type=card&card[number]={{card_number}}&card[exp_month]={{card_expiry_month}}&card[exp_year]={{card_expiry_year_yyyy}}&card[cvc]=314"
-  }
-}'
-```
-{% endraw %}
-
-### 2. Create a payment intent
-
-```bash
-curl --location 'https://forward.sandbox.checkout.com/forward' \
---header 'Content-Type: application/json' \
---header 'Authorization: YOUR_OAUTH_TOKEN' \
---data '{
-  "destination_request": {
-    "url": "https://api.stripe.com/v1/payment_intents",
-    "method": "POST",
-    "headers": {
-      "raw": {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "Authorization": "Basic YOUR_STRIPE_KEY_BASE64"
-      }
-    },
-    "body": "amount=1000&currency=usd&payment_method_types[]=card"
-  }
-}'
-```
-
-### 3. Confirm the payment intent
-
-```bash
-curl --location 'https://forward.sandbox.checkout.com/forward' \
---header 'Content-Type: application/json' \
---header 'Authorization: YOUR_OAUTH_TOKEN' \
---data '{
-  "destination_request": {
-    "url": "https://api.stripe.com/v1/payment_intents/<PAYMENT_INTENT_ID>/confirm",
-    "method": "POST",
-    "body": "payment_method=<PAYMENT_METHOD_ID>"
-  }
-}'
-```
-
----
-
-## Adyen forwarding example
-
-To forward a payment request to Adyen:
-
-{% raw %}
-```json
-{
-  "source": {
-    "type": "token",
-    "token": "tok_zjri4ogrqjuudnhsr7ooq5z6pq"
-  },
-  "reference": "string",
-  "processing_channel_id": "pc_f2vtqcmhgykurkorrnnpz3kneq",
-  "destination_request": {
-    "url": "https://checkout-test.adyen.com/v71/payments",
-    "method": "POST",
-    "headers": {
-      "raw": {
-        "Content-Type": "application/json",
-        "X-API-KEY": "<ADYEN API KEY>"
-      }
-    },
-    "body": "{\"amount\":{\"currency\":\"EUR\",\"value\":10},\"paymentMethod\":{\"type\":\"scheme\",\"encryptedCardNumber\":\"test_{{card_number}}\",\"encryptedExpiryMonth\":\"test_{{card_expiry_month}}\",\"encryptedExpiryYear\":\"test_{{card_expiry_year_yyyy}}\",\"encryptedSecurityCode\":\"test_737\"},\"reference\":\"my_reference\",\"merchantAccount\":\"YourMerchantAccount\",\"returnUrl\":\"https://httpstat.us/\"}"
-  }
-}
-```
-{% endraw %}
 
 ---
 
