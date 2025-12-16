@@ -27,7 +27,19 @@ This enables you to:
 
 ## Retrieve JSON Web Key
 
-You need Checkout.com's JSON Web Key (JWK) to encrypt sensitive request headers using JSON Web Encryption (JWE).
+Checkout.com provides a JSON Web Key (JWK) that you can use to encrypt sensitive data in your requests using JSON Web Encryption (JWE). This step is **optional** but recommended for enhanced security.
+
+### Key Features
+
+- **Prevent accidental logging** – Encrypt sensitive headers so they don't appear in logs
+- **End-to-end encryption** – Data remains encrypted until it reaches its destination
+- **Industry standard** – Uses JWE (JSON Web Encryption), a widely adopted standard
+
+### When to use
+
+Use JWE encryption when you want to include sensitive information in your request headers (such as third-party API keys) and want to ensure they cannot be accidentally logged or exposed in transit.
+
+### Retrieve the JWK
 
 In your terminal, run the following command to retrieve our JWK:
 
@@ -94,14 +106,46 @@ Authenticate the request using one of the following:
 
 Network tokens enhance transaction security by replacing raw card details. This helps ensure compliance with PCI DSS standards and reduces the risk of fraud.
 
-To process a request which includes network tokens, you must include the forwarding logic that checks they're available and the required fields to forward.
+To use network tokens, set the following fields in your request:
 
-- Set the `network_token.enabled` field to `true`.
-- Set the `network_token.request_cryptogram` field to:
+- `network_token.enabled` – Set to `true` to enable network token lookup
+- `network_token.request_cryptogram` – Set based on transaction type:
   - `true` – For customer-initiated transactions (CITs)
   - `false` – For merchant-initiated transactions (MITs)
 
-If a network token is unavailable, the Forward API falls back to using tokenized card details.
+#### How it works
+
+When you set `network_token.enabled` to `true`, the Forward API checks if a network token is available for the instrument. If a token is available and you also set `request_cryptogram` to `true`, the API requests a new cryptogram from the card scheme.
+
+The token values then become available to use as placeholders in your request body.
+
+#### Fields forwarded for CITs (with cryptogram)
+
+When `request_cryptogram` is `true` and the network token is available:
+
+- `network_token_number`
+- `network_token_expiry_month`
+- `network_token_expiry_year_yyyy` or `network_token_expiry_year_yy`
+- `network_token_type`
+- `network_token_cryptogram`
+- `network_token_eci`
+
+#### Fields forwarded for MITs (without cryptogram)
+
+When `request_cryptogram` is `false`:
+
+- `network_token_number`
+- `network_token_expiry_month`
+- `network_token_expiry_year_yyyy` or `network_token_expiry_year_yy`
+- `network_token_type`
+
+#### Fallback behavior
+
+If a network token or cryptogram is unavailable, the Forward API automatically falls back to using card details:
+
+- `card_number`
+- `card_expiry_month`
+- `card_expiry_year_yyyy` or `card_expiry_year_yy`
 
 ### Placeholder values
 
@@ -212,6 +256,12 @@ You can use variables, query parameters, and JWE encryption to build complex req
 
 Variables allow you to define reusable values that can be referenced throughout your request. They are processed before the request body, headers, and query parameters.
 
+#### Key Features
+
+- **Reusable values** – Define once, reference anywhere in your request
+- **Combine placeholders** – Build complex values by combining multiple card/billing placeholders
+- **Processed first** – Variables are resolved before body, headers, and query parameters
+
 Variables are defined in the `variables` array within your `destination_request`. Each variable has a `name` and a `value`. Once defined, you can reference them anywhere using the syntax {% raw %}`{{ variable_name }}`{% endraw %}.
 
 #### Request example with variables
@@ -254,6 +304,12 @@ Variables are defined in the `variables` array within your `destination_request`
 
 Query parameters allow you to append key-value pairs to your destination URL. They are automatically appended to the URL when the request is sent.
 
+#### Key Features
+
+- **Dynamic URL building** – Automatically append parameters to destination URLs
+- **Placeholder support** – Use card placeholders in query parameter values
+- **Clean separation** – Keep URL and parameters organized separately in your request
+
 For example, if your destination URL is `https://api.example.com/v1/charges` and you define query parameters, the final URL becomes `https://api.example.com/v1/charges?merchantId=12345&version=2024-01&cardBin=411111`.
 
 #### Request example with query parameters
@@ -287,6 +343,13 @@ For example, if your destination URL is `https://api.example.com/v1/charges` and
 ### JWE encryption
 
 JWE (JSON Web Encryption) allows you to encrypt sensitive data within your request using a public or symmetric key.
+
+#### Key Features
+
+- **Asymmetric encryption** – Use RSA public keys (RSA-OAEP, RSA-OAEP-256)
+- **Symmetric encryption** – Use shared secrets (A256GCMKW)
+- **Custom headers** – Add key IDs, timestamps, and other JWE headers
+- **Prevent logging** – Encrypted data won't appear in logs or be exposed in transit
 
 The `jwe_encrypt` function is available within your templates:
 
@@ -352,6 +415,13 @@ For destinations that require symmetric key encryption, use algorithms like `A25
 
 The Forward API allows you to securely store and manage sensitive data such as credentials, API keys, and encryption keys.
 
+### Key Features
+
+- **Secure storage** – Store API keys, shared secrets, and encryption keys securely
+- **Easy reference** – Use {% raw %}`{{ secret_<name> }}`{% endraw %} syntax to reference secrets in requests
+- **No exposure** – Secrets are never included in logs or API responses
+- **Reusable** – Store once, use across multiple forward requests
+
 ### Storing secrets
 
 Store a secret by providing a unique name and the sensitive value.
@@ -397,40 +467,6 @@ Once a secret is stored, reference it using the {% raw %}`{{ secret_<secret_name
 }
 ```
 {% endraw %}
-
----
-
-## Forwarding logic
-
-The fields forwarded to the third-party endpoint depend on the type of request.
-
-### CIT using a network token and cryptogram
-
-If you set `network_token.request_cryptogram` to `true` and the network token and cryptogram are available:
-
-- `network_token_number`
-- `network_token_expiry_month`
-- `network_token_expiry_year_yyyy` or `network_token_expiry_year_yy`
-- `network_token_type`
-- `network_token_cryptogram`
-- `network_token_eci`
-
-### MIT using a network token
-
-If you set `network_token.request_cryptogram` to `false`:
-
-- `network_token_number`
-- `network_token_expiry_month`
-- `network_token_expiry_year_yyyy` or `network_token_expiry_year_yy`
-- `network_token_type`
-
-### Network token fallback
-
-If a network token or cryptogram is unavailable, the following card detail values are used:
-
-- `card_number`
-- `card_expiry_month`
-- `card_expiry_year_yyyy` or `card_expiry_year_yy`
 
 ---
 
