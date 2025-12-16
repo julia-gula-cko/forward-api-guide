@@ -200,7 +200,8 @@ You can use the following placeholder values in the `destination_request.body` f
 | Placeholder | Description |
 |-------------|-------------|
 | `{{card_cvv}}` | The card verification value (security code) |
-| `{{card_expiry_month}}` | The card's expiry month (format: `MM`) |
+| `{{card_expiry_month}}` | The card's expiry month (single digit, e.g., `8` for August) |
+| `{{card_expiry_month_mm}}` | The card's expiry month zero-padded (format: `MM`, e.g., `08` for August) |
 | `{{card_expiry_year_yy}}` | The card's expiry year (format: `YY`) |
 | `{{card_expiry_year_yyyy}}` | The card's expiry year (format: `YYYY`) |
 | `{{card_number}}` | The full card number |
