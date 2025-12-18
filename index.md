@@ -581,7 +581,7 @@ forward_api_variables = [
 ]
 
 # The encrypted payment instrument using JWE
-encrypted_payment_instrument = "{{ jwe_encrypt(payment_instrument, key=encryption_key, alg='A256GCMKW', enc='A256GCM', headers=jwe_headers) }}"
+encrypted_payment_instrument = "{{ jwe_encrypt(data=payment_instrument, key=encryption_key, alg='A256GCMKW', enc='A256GCM', headers=jwe_headers) }}"
 
 # Build the Visa API request body
 visa_api_request = {
